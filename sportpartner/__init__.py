@@ -1,1 +1,1 @@
-"""SportPartner Finder: функциональная версия ПР2."""
+"""SportPartner Finder: объектная версия ПР3."""
