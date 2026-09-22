@@ -1,13 +1,7 @@
-# Виртуальное окружение
-venv/
 .venv/
-env/
-
-# Кэш Python
+venv/
 __pycache__/
 *.py[cod]
-
-# Настройки IDE
-.vscode/
-.idea/
-*.swp
+.pytest_cache/
+.DS_Store
+.coverage

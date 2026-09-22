@@ -1,0 +1,114 @@
+{
+  "athletes": [
+    {
+      "id": 1,
+      "name": "Алексей",
+      "age": 20,
+      "city": "Москва",
+      "level": 2
+    },
+    {
+      "id": 2,
+      "name": "Мария",
+      "age": 21,
+      "city": "Москва",
+      "level": 3
+    },
+    {
+      "id": 3,
+      "name": "Иван",
+      "age": 23,
+      "city": "Москва",
+      "level": 3
+    },
+    {
+      "id": 4,
+      "name": "Анна",
+      "age": 22,
+      "city": "Москва",
+      "level": 2
+    },
+    {
+      "id": 5,
+      "name": "Олег",
+      "age": 25,
+      "city": "Казань",
+      "level": 5
+    }
+  ],
+  "sports": [
+    {
+      "id": 1,
+      "name": "Большой теннис",
+      "equipment": "Ракетка и мячи"
+    },
+    {
+      "id": 2,
+      "name": "Бег",
+      "equipment": "Кроссовки"
+    },
+    {
+      "id": 3,
+      "name": "Бадминтон",
+      "equipment": "Ракетка и волан"
+    }
+  ],
+  "events": [
+    {
+      "id": 1,
+      "sport_id": 1,
+      "city": "Москва",
+      "location": "Корт 'Спартак', площадка 2",
+      "date": "2026-10-05",
+      "required_level": 3,
+      "capacity": 4
+    },
+    {
+      "id": 2,
+      "sport_id": 2,
+      "city": "Москва",
+      "location": "Парк Горького",
+      "date": "2026-10-07",
+      "required_level": 2,
+      "capacity": 8
+    },
+    {
+      "id": 3,
+      "sport_id": 3,
+      "city": "Казань",
+      "location": "Спортивный зал",
+      "date": "2026-10-08",
+      "required_level": 4,
+      "capacity": 2
+    },
+    {
+      "id": 4,
+      "sport_id": 2,
+      "city": "Москва",
+      "location": "Стадион",
+      "date": "2026-09-01",
+      "required_level": 2,
+      "capacity": 3
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "athlete_id": 2,
+      "event_id": 1,
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "athlete_id": 3,
+      "event_id": 1,
+      "status": "active"
+    },
+    {
+      "id": 3,
+      "athlete_id": 4,
+      "event_id": 1,
+      "status": "active"
+    }
+  ]
+}
