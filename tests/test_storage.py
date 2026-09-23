@@ -12,7 +12,7 @@ from sportpartner.storage import load_data, save_data
 
 @pytest.fixture
 def raw() -> dict:
-    path = Path(__file__).parents[1] / "data" / "store.json"
+    path = Path(__file__).parent / "fixtures" / "store.json"
     return json.loads(path.read_text(encoding="utf-8"))
 
 
