@@ -1,0 +1,20 @@
+{% load static %}<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}SportPartner Finder{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'homepage/css/style.css' %}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    {% include "includes/navigation.html" %}
+    <main class="container flex-grow-1">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="container text-center py-3 mt-4 border-top">
+        <p class="text-muted mb-0">© <span id="current-year"></span> SportPartner Finder. РТУ МИРЭА.</p>
+    </footer>
+    <script src="{% static 'homepage/js/main.js' %}"></script>
+</body>
+</html>

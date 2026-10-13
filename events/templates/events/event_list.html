@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Тренировки — SportPartner Finder{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Доступные тренировки</h1>
+    <span class="badge bg-secondary fs-6">Всего событий: {{ events|length }}</span>
+</div>
+{% for event in events %}
+    {% include "events/includes/event_card.html" %}
+{% empty %}
+    <div class="alert alert-info">Событий пока не создано.</div>
+{% endfor %}
+{% endblock %}

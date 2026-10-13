@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Заявки на тренировки — SportPartner Finder{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Список заявок</h1>
+    <span class="badge bg-secondary fs-6">Всего: {{ requests|length }}</span>
+</div>
+<div class="list-group">
+{% for req in requests %}
+    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <div>
+            <a href="{% url 'requests:detail' req.id %}" class="fw-bold text-decoration-none">Заявка #{{ req.id }}</a>
+            <div class="text-muted small">Спортсмен: {{ req.athlete_name }} → Тренировка: {{ req.event_title }}</div>
+        </div>
+        {% include "requests/includes/request_status.html" %}
+    </div>
+{% empty %}
+    <div class="alert alert-info">Заявок пока нет.</div>
+{% endfor %}
+</div>
+{% endblock %}

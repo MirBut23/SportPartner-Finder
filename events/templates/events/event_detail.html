@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{% if event %}{{ event.title }} — SportPartner Finder{% else %}Событие не найдено{% endif %}{% endblock %}
+{% block content %}
+{% if event %}
+<div class="card shadow">
+    <div class="card-body">
+        <h1 class="card-title mb-3">{{ event.title }}</h1>
+        <p class="lead"><strong>Вид спорта:</strong> {{ event.sport_name }}</p>
+        <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item"><strong>ID события:</strong> {{ event.id }}</li>
+            <li class="list-group-item"><strong>Город и место:</strong> {{ event.city }}, {{ event.location }}</li>
+            <li class="list-group-item"><strong>Дата проведения:</strong> {{ event.date }}</li>
+            <li class="list-group-item"><strong>Требуемый уровень:</strong> {{ event.min_level }} - {{ event.max_level }}</li>
+            <li class="list-group-item">
+                <strong>Статус мест:</strong>
+                {% if event.capacity > 0 %}
+                    <span class="badge bg-success">Свободно мест: {{ event.capacity }}</span>
+                {% else %}
+                    <span class="badge bg-danger">Мест нет</span>
+                {% endif %}
+            </li>
+        </ul>
+        <a href="{% url 'events:list' %}" class="btn btn-outline-secondary">← К списку тренировок</a>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-danger">
+    <h2>Событие не найдено</h2>
+    <p>Тренировка с указанным идентификатором отсутствует.</p>
+    <a href="{% url 'events:list' %}" class="btn btn-secondary">Вернуться к списку</a>
+</div>
+{% endif %}
+{% endblock %}

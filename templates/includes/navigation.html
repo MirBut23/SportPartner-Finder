@@ -1,0 +1,8 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 mb-4">
+    <a class="navbar-brand" href="{% url 'homepage:index' %}">SportPartner</a>
+    <div class="navbar-nav">
+        <a class="nav-link" href="{% url 'homepage:index' %}">Главная</a>
+        <a class="nav-link" href="{% url 'events:list' %}">Тренировки</a>
+        <a class="nav-link" href="{% url 'requests:list' %}">Заявки</a>
+    </div>
+</nav>

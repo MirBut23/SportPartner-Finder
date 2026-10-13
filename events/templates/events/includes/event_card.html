@@ -1,0 +1,9 @@
+<article class="card event-card mb-3 shadow-sm">
+    <div class="card-body">
+        <h3 class="card-title">{{ event.title|default:"Без названия" }}</h3>
+        <p class="card-text mb-1"><strong>Вид спорта:</strong> {{ event.sport_name }}</p>
+        <p class="card-text mb-1"><strong>Локация:</strong> {{ event.city }}, {{ event.location }}</p>
+        <p class="card-text mb-2"><strong>Дата:</strong> {{ event.date }}</p>
+        <a href="{% url 'events:detail' event.id %}" class="btn btn-sm btn-outline-primary">Подробнее</a>
+    </div>
+</article>

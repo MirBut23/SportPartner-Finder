@@ -1,0 +1,5 @@
+{% if req.status == "active" %}
+    <span class="badge bg-success request-status-badge">Активна</span>
+{% else %}
+    <span class="badge bg-secondary request-status-badge">Отменена</span>
+{% endif %}

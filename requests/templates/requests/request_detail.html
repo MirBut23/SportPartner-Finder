@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{% if req %}Заявка #{{ req.id }} — SportPartner Finder{% else %}Заявка не найдена{% endif %}{% endblock %}
+{% block content %}
+{% if req %}
+<div class="card shadow">
+    <div class="card-body">
+        <h1 class="card-title">Заявка #{{ req.id }}</h1>
+        <ul class="list-group list-group-flush my-3">
+            <li class="list-group-item"><strong>Спортсмен:</strong> {{ req.athlete_name }}</li>
+            <li class="list-group-item"><strong>Событие:</strong> {{ req.event_title }}</li>
+            <li class="list-group-item"><strong>Текущий статус:</strong> {% include "requests/includes/request_status.html" %}</li>
+        </ul>
+        <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary">← К списку заявок</a>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-danger">
+    <h2>Заявка не найдена</h2>
+    <p>Заявка с указанным идентификатором отсутствует в системе.</p>
+    <a href="{% url 'requests:list' %}" class="btn btn-secondary">Вернуться к списку</a>
+</div>
+{% endif %}
+{% endblock %}
