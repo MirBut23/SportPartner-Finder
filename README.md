@@ -32,3 +32,8 @@
 * разработка REST API;
 * контейнеризация приложения с использованием Docker;
 * настройка CI/CD конвейера.
+
+source venv/bin/activate
+python manage.py runserver
+
+python main.py

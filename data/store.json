@@ -1,0 +1,96 @@
+{
+  "sports": [
+    {
+      "id": 1,
+      "name": "Теннис"
+    },
+    {
+      "id": 2,
+      "name": "Баскетбол"
+    },
+    {
+      "id": 3,
+      "name": "Бег"
+    }
+  ],
+  "athletes": [
+    {
+      "id": 1,
+      "name": "Алексей Бутенко",
+      "level": 3,
+      "city": "Москва"
+    },
+    {
+      "id": 2,
+      "name": "Михаил Иванов",
+      "level": 2,
+      "city": "Москва"
+    },
+    {
+      "id": 3,
+      "name": "Дмитрий Смирнов",
+      "level": 4,
+      "city": "Москва"
+    }
+  ],
+  "events": [
+    {
+      "id": 1,
+      "title": "Интенсив по большому теннису",
+      "sport_id": 1,
+      "city": "Москва",
+      "location": "Корт «Спартак»",
+      "date": "2026-10-20",
+      "min_level": 2,
+      "max_level": 4,
+      "capacity": 2
+    },
+    {
+      "id": 2,
+      "title": "Стритбол 3х3 на открытой площадке",
+      "sport_id": 2,
+      "city": "Москва",
+      "location": "Парк Горького",
+      "date": "2026-10-22",
+      "min_level": 1,
+      "max_level": 5,
+      "capacity": 0
+    },
+    {
+      "id": 3,
+      "title": "Вечерняя пробежка по набережной",
+      "sport_id": 3,
+      "city": "Москва",
+      "location": "Лужники",
+      "date": "2026-10-25",
+      "min_level": 1,
+      "max_level": 3,
+      "capacity": 5
+    },
+    {
+      "id": 4,
+      "title": "Тест",
+      "sport_id": 2,
+      "city": "Москва",
+      "location": "Лужники",
+      "date": "23.02.2027",
+      "min_level": 1,
+      "max_level": 5,
+      "capacity": 2
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "athlete_id": 1,
+      "event_id": 1,
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "athlete_id": 2,
+      "event_id": 2,
+      "status": "cancelled"
+    }
+  ]
+}

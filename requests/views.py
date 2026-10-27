@@ -1,49 +1,44 @@
-import json
+import sqlite3
 from pathlib import Path
 from django.shortcuts import render
 
-DATA_FILE = Path("data/store.json")
+DB_PATH = Path("data/sportpartner.sqlite")
 
 
-def get_data():
-    if not DATA_FILE.exists():
-        return {"requests": [], "athletes": [], "events": []}
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+def get_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 def requests_list(request):
-    data = get_data()
-    reqs = data.get("requests", [])
-    athletes = {a["id"]: a["name"] for a in data.get("athletes", [])}
-    events = {e["id"]: e["title"] for e in data.get("events", [])}
-    for r in reqs:
-        r["athlete_name"] = athletes.get(
-            r.get("athlete_id"), "Спортсмен"
-        )
-        r["event_title"] = events.get(
-            r.get("event_id"), "Событие"
-        )
-    return render(
-        request,
-        "requests/request_list.html",
-        {"requests": reqs},
-    )
+    conn = get_db()
+    query = """
+    SELECT requests.id, athletes.name AS athlete_name,
+           events.title AS event_title, requests.status
+    FROM requests
+    JOIN athletes ON requests.athlete_id = athletes.id
+    JOIN events ON requests.event_id = events.id
+    WHERE requests.is_cancelled = 0
+    ORDER BY requests.id;
+    """
+    reqs = conn.execute(query).fetchall()
+    conn.close()
+    return render(request, "requests/request_list.html", {"requests": reqs})
 
 
 def request_detail(request, request_id):
-    data = get_data()
-    reqs = data.get("requests", [])
-    athletes = {a["id"]: a["name"] for a in data.get("athletes", [])}
-    events = {e["id"]: e["title"] for e in data.get("events", [])}
-    req_item = next((r for r in reqs if r.get("id") == request_id), None)
-    if req_item:
-        req_item["athlete_name"] = athletes.get(
-            req_item.get("athlete_id"), "Спортсмен"
-        )
-        req_item["event_title"] = events.get(
-            req_item.get("event_id"), "Событие"
-        )
+    conn = get_db()
+    query = """
+    SELECT requests.id, athletes.name AS athlete_name,
+           events.title AS event_title, requests.status
+    FROM requests
+    JOIN athletes ON requests.athlete_id = athletes.id
+    JOIN events ON requests.event_id = events.id
+    WHERE requests.id = ?;
+    """
+    req_item = conn.execute(query, (request_id,)).fetchone()
+    conn.close()
     status_code = 200 if req_item else 404
     return render(
         request,
@@ -51,3 +46,19 @@ def request_detail(request, request_id):
         {"req": req_item},
         status=status_code,
     )
+
+
+def statistics(request):
+    conn = get_db()
+    query = """
+    SELECT events.title AS event_title,
+           COUNT(requests.id) AS requests_count
+    FROM events
+    LEFT JOIN requests ON events.id = requests.event_id
+                      AND requests.is_cancelled = 0
+    GROUP BY events.id, events.title
+    ORDER BY requests_count DESC;
+    """
+    stats = conn.execute(query).fetchall()
+    conn.close()
+    return render(request, "requests/statistics.html", {"statistics": stats})

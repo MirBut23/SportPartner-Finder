@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Статистика активности — SportPartner Finder{% endblock %}
+{% block content %}
+<h1 class="mb-4">Статистика заявок по тренировкам</h1>
+<div class="list-group">
+{% for item in statistics %}
+    <div class="list-group-item d-flex justify-content-between align-items-center">
+        <span>{{ item.event_title }}</span>
+        <span class="badge bg-primary rounded-pill">Заявок: {{ item.requests_count }}</span>
+    </div>
+{% empty %}
+    <div class="alert alert-info">Данные отсутствуют.</div>
+{% endfor %}
+</div>
+{% endblock %}
