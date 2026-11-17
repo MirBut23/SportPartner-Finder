@@ -16,6 +16,18 @@ class Sport(models.Model):
         verbose_name_plural = "Виды спорта"
 
 
+class EventQuerySet(models.QuerySet):
+    def available(self):
+        return self.filter(capacity__gt=0)
+
+    def for_date(self, selected_date):
+        return self.filter(date=selected_date)
+
+
+class EventManager(models.Manager.from_queryset(EventQuerySet)):
+    pass
+
+
 class Event(models.Model):
     title = models.CharField(
         max_length=200,
@@ -49,7 +61,10 @@ class Event(models.Model):
     capacity = models.PositiveIntegerField(
         default=2,
         verbose_name="Вместимость (мест)",
+        help_text="Укажите максимальное количество участников тренировки.",
     )
+
+    objects = EventManager()
 
     def is_suitable_for(self, athlete_level):
         return self.min_level <= athlete_level <= self.max_level

@@ -25,6 +25,18 @@ class Athlete(models.Model):
         verbose_name_plural = "Спортсмены"
 
 
+class RequestQuerySet(models.QuerySet):
+    def active(self):
+        return self.filter(is_cancelled=False)
+
+    def cancelled(self):
+        return self.filter(is_cancelled=True)
+
+
+class RequestManager(models.Manager.from_queryset(RequestQuerySet)):
+    pass
+
+
 class Request(models.Model):
     athlete = models.ForeignKey(
         Athlete,
@@ -47,6 +59,8 @@ class Request(models.Model):
         default=False,
         verbose_name="Заявка отменена",
     )
+
+    objects = RequestManager()
 
     def cancel(self):
         self.is_cancelled = True
