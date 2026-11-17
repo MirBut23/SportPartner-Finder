@@ -1,10 +1,16 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3 mb-4">
-    <a class="navbar-brand" href="{% url 'homepage:index' %}">SportPartner</a>
-    <div class="navbar-nav">
-        <a class="nav-link" href="{% url 'homepage:index' %}">Главная</a>
-        <a class="nav-link" href="{% url 'events:list' %}">Тренировки</a>
-        <a class="nav-link" href="{% url 'events:available' %}">Поиск по дате</a>
-        <a class="nav-link" href="{% url 'requests:list' %}">Заявки</a>
-        <a class="nav-link" href="{% url 'requests:statistics' %}">Статистика</a>
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="{% url 'homepage:index' %}">
+            <img src="{% static 'homepage/img/logo.svg' %}" alt="Logo" width="30" height="30">
+            <span>SportPartner Finder</span>
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="{% url 'homepage:index' %}">Главная</a>
+            <a class="nav-link" href="{% url 'events:list' %}">Тренировки</a>
+            <a class="nav-link" href="{% url 'requests:list' %}">Заявки</a>
+            <a class="nav-link" href="{% url 'requests:statistics' %}">Статистика</a>
+            <a class="nav-link" href="/admin/">Админка</a>
+        </div>
     </div>
 </nav>
