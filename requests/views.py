@@ -1,22 +1,38 @@
 from django.core.paginator import Paginator
 from django.db.models import Count, F, Q
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 from events.models import Event
-from .models import Athlete, Request
+from .forms import RequestFilterForm, RequestForm
+from .models import Request
 
 
 def requests_list(request):
-    event_id = request.GET.get("event", "").strip()
-    athlete_id = request.GET.get("athlete", "").strip()
-    sort = request.GET.get("sort", "id")
+    form = RequestFilterForm(request.GET or None)
+    form_valid = form.is_bound and form.is_valid()
 
-    reqs_qs = Request.objects.exclude(is_cancelled=True)
+    event_id = None
+    athlete_id = None
+    sort = "id"
+    error = None
 
-    if event_id.isdigit():
-        reqs_qs = reqs_qs.filter(event_id=int(event_id))
+    if form.is_bound:
+        if form_valid:
+            selected_event = form.cleaned_data.get("event")
+            selected_athlete = form.cleaned_data.get("athlete")
+            event_id = selected_event.pk if selected_event else None
+            athlete_id = selected_athlete.pk if selected_athlete else None
+            sort = form.cleaned_data.get("sort") or "id"
+        else:
+            error = "Проверьте введённые значения фильтров."
 
-    if athlete_id.isdigit():
-        reqs_qs = reqs_qs.filter(athlete_id=int(athlete_id))
+    reqs_qs = Request.objects.active()
+
+    if form_valid:
+        if event_id:
+            reqs_qs = reqs_qs.filter(event_id=event_id)
+        if athlete_id:
+            reqs_qs = reqs_qs.filter(athlete_id=athlete_id)
 
     reqs_qs = reqs_qs.annotate(
         athlete_name=F("athlete__name"),
@@ -46,11 +62,8 @@ def requests_list(request):
     context = {
         "requests": page_obj,
         "page_obj": page_obj,
-        "events": Event.objects.order_by("title"),
-        "athletes": Athlete.objects.order_by("name"),
-        "selected_event": event_id,
-        "selected_athlete": athlete_id,
-        "sort": sort,
+        "form": form,
+        "error": error,
     }
     return render(request, "requests/request_list.html", context)
 
@@ -64,6 +77,78 @@ def request_detail(request, request_id):
         pk=request_id,
     )
     return render(request, "requests/request_detail.html", {"req": req_item})
+
+
+def request_create(request):
+    if request.method == "POST":
+        form = RequestForm(request.POST)
+        if form.is_valid():
+            athlete = form.cleaned_data["athlete"]
+            event = form.cleaned_data["event"]
+
+            already_booked = Request.objects.active().filter(
+                athlete=athlete,
+                event=event,
+            ).exists()
+            active_count = Request.objects.active().filter(event=event).count()
+
+            if already_booked:
+                form.add_error(None, "Этот спортсмен уже записан на выбранную тренировку.")
+            elif active_count >= event.capacity:
+                form.add_error(None, "На выбранную тренировку больше нет свободных мест.")
+            else:
+                form.save()
+                return redirect("requests:list")
+    else:
+        form = RequestForm()
+
+    return render(request, "requests/request_form.html", {"form": form})
+
+
+def request_update(request, request_id):
+    req_obj = get_object_or_404(Request.objects.active(), pk=request_id)
+
+    if request.method == "POST":
+        form = RequestForm(request.POST, instance=req_obj)
+        if form.is_valid():
+            athlete = form.cleaned_data["athlete"]
+            event = form.cleaned_data["event"]
+
+            already_booked = (
+                Request.objects.active()
+                .filter(athlete=athlete, event=event)
+                .exclude(pk=req_obj.pk)
+                .exists()
+            )
+            active_count = (
+                Request.objects.active()
+                .filter(event=event)
+                .exclude(pk=req_obj.pk)
+                .count()
+            )
+
+            if already_booked:
+                form.add_error(None, "Этот спортсмен уже записан на выбранную тренировку.")
+            elif active_count >= event.capacity:
+                form.add_error(None, "На выбранную тренировку больше нет свободных мест.")
+            else:
+                form.save()
+                return redirect("requests:list")
+    else:
+        form = RequestForm(instance=req_obj)
+
+    return render(
+        request,
+        "requests/request_form.html",
+        {"form": form, "req_obj": req_obj},
+    )
+
+
+@require_POST
+def request_cancel(request, request_id):
+    req_obj = get_object_or_404(Request.objects.active(), pk=request_id)
+    req_obj.cancel()
+    return redirect("requests:list")
 
 
 def statistics(request):

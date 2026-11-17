@@ -63,6 +63,12 @@ class Event(models.Model):
         verbose_name="Вместимость (мест)",
         help_text="Укажите максимальное количество участников тренировки.",
     )
+    image = models.ImageField(
+        upload_to="events/",
+        blank=True,
+        null=True,
+        verbose_name="Фото локации",
+    )
 
     objects = EventManager()
 

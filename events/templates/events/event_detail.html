@@ -3,6 +3,9 @@
 {% block content %}
 {% if event %}
 <div class="card shadow">
+    {% if event.image %}
+        <img src="{{ event.image.url }}" alt="{{ event.title }}" class="card-img-top" style="max-height: 360px; object-fit: cover;">
+    {% endif %}
     <div class="card-body">
         <h1 class="card-title mb-3">{{ event.title }}</h1>
         <p class="lead"><strong>Вид спорта:</strong> {{ event.sport_name }}</p>

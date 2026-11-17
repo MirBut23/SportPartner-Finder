@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.db.models import F, Q
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
+from .forms import EventForm
 from .models import Event, Sport
 
 
@@ -47,6 +48,17 @@ def event_detail(request, event_id):
         pk=event_id,
     )
     return render(request, "events/event_detail.html", {"event": event})
+
+
+def event_create(request):
+    if request.method == "POST":
+        form = EventForm(request.POST, request.FILES)
+        if form.is_valid():
+            event = form.save()
+            return redirect("events:detail", event_id=event.pk)
+    else:
+        form = EventForm()
+    return render(request, "events/event_form.html", {"form": form})
 
 
 def available_events(request):

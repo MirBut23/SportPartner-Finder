@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{% if req_obj %}Редактирование заявки #{{ req_obj.pk }}{% else %}Новая заявка{% endif %} — SportPartner Finder{% endblock %}
+{% block content %}
+<h1 class="mb-4">
+    {% if req_obj %}
+        Редактирование заявки #{{ req_obj.pk }}
+    {% else %}
+        Создание новой заявки
+    {% endif %}
+</h1>
+
+<form method="post" class="card p-4 shadow-sm">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="mb-3">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.help_text %}
+                <div class="form-text">{{ field.help_text }}</div>
+            {% endif %}
+            {% for error in field.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endfor %}
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+            {% if req_obj %}Сохранить изменения{% else %}Подать заявку{% endif %}
+        </button>
+        <a href="{% url 'requests:list' %}" class="btn btn-outline-secondary">Отмена</a>
+    </div>
+</form>
+{% endblock %}
