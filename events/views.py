@@ -1,68 +1,78 @@
-import sqlite3
-from pathlib import Path
-from django.shortcuts import render
-
-DB_PATH = Path("data/sportpartner.sqlite")
-
-
-def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    return conn
+from datetime import datetime
+from django.db.models import F, Q
+from django.shortcuts import get_object_or_404, render
+from .models import Event, Sport
 
 
 def events_list(request):
-    conn = get_db()
-    query = """
-    SELECT events.id, events.title, sports.name AS sport_name,
-           events.city, events.location, events.date, events.capacity
-    FROM events
-    JOIN sports ON events.sport_id = sports.id
-    ORDER BY events.id;
-    """
-    events = conn.execute(query).fetchall()
-    conn.close()
-    return render(request, "events/event_list.html", {"events": events})
+    search_query = request.GET.get("q", "").strip()
+    sport_id = request.GET.get("sport", "").strip()
+    sort_by = request.GET.get("sort", "date")
+
+    events_qs = Event.objects.select_related("sport").annotate(
+        sport_name=F("sport__name")
+    )
+
+    if search_query:
+        events_qs = events_qs.filter(
+            Q(title__icontains=search_query) | Q(city__icontains=search_query)
+        )
+
+    if sport_id.isdigit():
+        events_qs = events_qs.filter(sport_id=int(sport_id))
+
+    allowed_sort = {
+        "date": "date",
+        "title": "title",
+        "capacity": "-capacity",
+    }
+    sort_field = allowed_sort.get(sort_by, "date")
+    events_qs = events_qs.order_by(sort_field, "id")
+
+    context = {
+        "events": events_qs,
+        "sports": Sport.objects.order_by("name"),
+        "search_query": search_query,
+        "selected_sport": sport_id,
+        "sort_by": sort_by,
+    }
+    return render(request, "events/event_list.html", context)
 
 
 def event_detail(request, event_id):
-    conn = get_db()
-    query = """
-    SELECT events.id, events.title, sports.name AS sport_name,
-           events.city, events.location, events.date,
-           events.min_level, events.max_level, events.capacity
-    FROM events
-    JOIN sports ON events.sport_id = sports.id
-    WHERE events.id = ?;
-    """
-    event = conn.execute(query, (event_id,)).fetchone()
-    conn.close()
-    status_code = 200 if event else 404
-    return render(
-        request,
-        "events/event_detail.html",
-        {"event": event},
-        status=status_code,
+    event = get_object_or_404(
+        Event.objects.select_related("sport").annotate(
+            sport_name=F("sport__name")
+        ),
+        pk=event_id,
     )
+    return render(request, "events/event_detail.html", {"event": event})
 
 
 def available_events(request):
-    event_date = request.GET.get("date")
-    events = []
+    event_date = request.GET.get("date", "").strip()
+    events_qs = []
+    error = None
+
     if event_date:
-        conn = get_db()
-        query = """
-        SELECT events.id, events.title, sports.name AS sport_name,
-               events.city, events.location, events.date, events.capacity
-        FROM events
-        JOIN sports ON events.sport_id = sports.id
-        WHERE events.date = ? AND events.capacity > 0
-        ORDER BY events.title;
-        """
-        events = conn.execute(query, (event_date,)).fetchall()
-        conn.close()
+        try:
+            selected_date = datetime.strptime(event_date, "%Y-%m-%d").date()
+        except ValueError:
+            error = "Укажите корректную дату."
+        else:
+            events_qs = (
+                Event.objects.select_related("sport")
+                .annotate(sport_name=F("sport__name"))
+                .filter(date=selected_date, capacity__gt=0)
+                .order_by("title")
+            )
+
     return render(
         request,
         "events/available.html",
-        {"events": events, "event_date": event_date},
+        {
+            "events": events_qs,
+            "event_date": event_date,
+            "error": error,
+        },
     )
